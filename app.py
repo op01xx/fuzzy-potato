@@ -1,9 +1,16 @@
 from colorama import Fore, Back, Style 
 
-
 super_dmg = 50
 punch_coin_reward = 10
 kick_coin_reward = 20
+while_counter = 0
+sps_available = False
+hps_available = False
+vcs_available = False
+sps_price = 30
+hps_price = 50
+vcs_price = 100
+
 
 
 print(f'''
@@ -26,7 +33,7 @@ dev_tools = '''
 
 Version: 1.0.5 (earlier access)
 
-Patch Notes (18.06.24; 21:54):
+Patch Notes (18.06.24; 21:34):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -38,7 +45,8 @@ Patch Notes (18.06.24; 21:54):
     +  added draw! (fixed win + loose at the same time)
     +  Nerfed kick (no spamming possible)
     +  minor bug fixes
-    +Added some Color
+    +  added colors to terminal
+    +  fixed major bugs
 
 Extra Notes:
 
@@ -147,15 +155,27 @@ class Shop():
 
 
     def buy_strength_potion(self, sps):
-        pass
+        if player.coins >= 30:
+            player.coins -= sps_price
+            sps_available = True
+        else:  
+            pass
     
     
     def buy_health_potion(self, hps):
-        pass
+        if player.coins >= 50:
+            player.coins -= hps_price
+            hps_available = True
+        else:  
+            pass
     
 
     def buy_vision_card(self, vcs):     #vc reveals "var: next_random_for_enemy"    (still need to remove commas and display action name instead of random number)
-        pass                            
+        if player.coins >= 100:
+            player.coins -= vcs_price
+            vcs_available = True
+        else:  
+            pass                            
 
 
 
@@ -179,25 +199,34 @@ enemy = Enemy(100, 10, 20)
 
 while enemy.hp > 0 and player.hp > 0:
     a = input()
-    b = random.random()
-    next_random_for_enemy = random.random()
+    if while_counter == 0:
+        b = random.random()
+        next_random_for_enemy = b
+
+    if a == "kick" and punch_counter < 3:
+        kick_ok = False
     
+    else:
+        kick_ok = True
+
+
+    b = next_random_for_enemy
 
     if a == "info:ver/upd/patn:tools":
         print(dev_tools)
 
 
-    if b >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "":
+    if b >= 0.25 and next_random_for_enemy >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True:
         enemy.punch(player)
         print(f'''
 Player's health after punch: {player.hp}
 ------------------------------''')
         
-    if b < 0.25 and a == "defend":
-        pass
+    if b < 0.25 and next_random_for_enemy < 0.25 and a == "defend":
+        exit
 
 
-    if b < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "":
+    if b < 0.25 and next_random_for_enemy < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True:
         player.super(enemy.dmg)
 
     if a == "punch":
@@ -270,7 +299,7 @@ Enemy's health after kick: {enemy.hp}
         
         
     if enemy.hp <= 0 and player.hp > 0:
-        print(Fore.GREEN +'''
+        print( Fore.GREEN + '''
           
 ******************************
             you win
@@ -285,14 +314,20 @@ Enemy's health after kick: {enemy.hp}
 ******************************
            you loose
 ******************************''')
-        print( Style.RESET_ALL)
+        print(Style.RESET_ALL)
         
     
     if player.hp <= 0 and enemy.hp <= 0:
-        print(  f'''
+        print(f'''
 ******************************
   You both die! Nobody wins
 ******************************
 
 ''')
+        
+    
+    while_counter += 1
+    next_random_for_enemy = random.random()
+    
+    print(next_random_for_enemy)
         
