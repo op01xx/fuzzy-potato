@@ -10,6 +10,7 @@ vcs_available = False
 sps_price = 30
 hps_price = 50
 vcs_price = 100
+shop_active = False
 
 
 
@@ -31,9 +32,9 @@ lead to unexpected errors!
 dev_tools = '''
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 
-Version: 1.0.5 (earlier access)
+Version: 1.0.8 (earlier access)
 
-Patch Notes (18.06.24; 21:34):
+Patch Notes (18.06.24; 22:56):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -47,6 +48,7 @@ Patch Notes (18.06.24; 21:34):
     +  minor bug fixes
     +  added colors to terminal
     +  fixed major bugs
+    +  added Shop (unfinished)
 
 Extra Notes:
 
@@ -106,6 +108,30 @@ Enemy uses super! Player takes {super_dmg} damage.
 
     def defend(self):
         pass
+    
+    
+    def sps_use(self):
+        self.dmg += 5
+        sps_available = False
+        
+    def hps_use(self):
+        self.hp += 30
+        sps_available = False
+        
+    def vcs_use(self):
+        if next_random_for_enemy < 0.25:
+            reveal = "super"
+        
+        else: 
+            reveal = "normal"
+        
+        
+        print( Fore.BLUE  +f'''
+------------------------------
+           {reveal}
+------------------------------
+                  ''')
+        print( Style.RESET_ALL)
 
 
         
@@ -139,6 +165,7 @@ Enemy punch's! {player.__class__.__name__} takes {self.dmg} damage.''')
     def take_kick(self, dmg):
         self.hp -= dmg * 2
         
+        
 
 
 
@@ -159,7 +186,12 @@ class Shop():
             player.coins -= sps_price
             sps_available = True
         else:  
-            pass
+            print(Fore.RED  + f'''
+------------------------------
+     Not enough Coins! 🪙
+------------------------------               
+                  ''')
+            print( Style.RESET_ALL)
     
     
     def buy_health_potion(self, hps):
@@ -167,7 +199,12 @@ class Shop():
             player.coins -= hps_price
             hps_available = True
         else:  
-            pass
+            print(Fore.RED  + f'''
+------------------------------
+     Not enough Coins! 🪙
+------------------------------               
+                  ''')
+            print( Style.RESET_ALL)
     
 
     def buy_vision_card(self, vcs):     #vc reveals "var: next_random_for_enemy"    (still need to remove commas and display action name instead of random number)
@@ -175,7 +212,12 @@ class Shop():
             player.coins -= vcs_price
             vcs_available = True
         else:  
-            pass                            
+            print(Fore.RED  + f'''
+------------------------------
+     Not enough Coins! 🪙
+------------------------------               
+                  ''')
+            print( Style.RESET_ALL)                            
 
 
 
@@ -189,6 +231,7 @@ class Shop():
 
 player = Player(100, 10, 20)
 enemy = Enemy(100, 10, 20)
+shop = Shop(1, 1, 1)
 
 
 
@@ -202,6 +245,8 @@ while enemy.hp > 0 and player.hp > 0:
     if while_counter == 0:
         b = random.random()
         next_random_for_enemy = b
+        
+    b = next_random_for_enemy
 
     if a == "kick" and punch_counter < 3:
         kick_ok = False
@@ -210,13 +255,11 @@ while enemy.hp > 0 and player.hp > 0:
         kick_ok = True
 
 
-    b = next_random_for_enemy
-
     if a == "info:ver/upd/patn:tools":
         print(dev_tools)
 
 
-    if b >= 0.25 and next_random_for_enemy >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True:
+    if b >= 0.25 and next_random_for_enemy >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True and a != "shop":
         enemy.punch(player)
         print(f'''
 Player's health after punch: {player.hp}
@@ -226,7 +269,7 @@ Player's health after punch: {player.hp}
         exit
 
 
-    if b < 0.25 and next_random_for_enemy < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True:
+    if b < 0.25 and next_random_for_enemy < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True and a != "shop":
         player.super(enemy.dmg)
 
     if a == "punch":
@@ -260,7 +303,7 @@ Punch Counter: {punch_counter}
 ------------------------------------------------------------
 The goal of the game is to 
 defeat the enemy! The Enemy has
-a 30% Chance to hit you with their
+a 25% Chance to hit you with their
 super attack which will kill you instantly.
 The only way to block this is to use "defend". You can use 
 "kick" to kick your opponent. This deals 2x more damage.
@@ -273,6 +316,7 @@ Controls:
     + Enter "defend" to defend against any attack
     + Enter "info:ver/upd/patn:tools" to view game version
     + Enter "kick" to kick you opponent (2x damage) 
+    + Enter "shop" to open the shop
 ------------------------------------------------------------              
               ''')
      
@@ -325,9 +369,43 @@ Enemy's health after kick: {enemy.hp}
 
 ''')
         
+      
+    next_random_for_enemy = random.random()
+      
+        
+    if a == "shop":
+        shop_active = True
+        print(f'''
+++++++++++++++++++++++++++++++++++
+               SHOP        
+               ¯¯¯¯
+    Your Balance: {player.coins}🪙
+    
+  Items:  strength 🫙   (30🪙 )
+          health 🫙     (50🪙 )
+          vision 🎴     (100🪙 )
+          
+++++++++++++++++++++++++++++++++++
+              ''')
+        
+        while shop_active == True:
+            c = input()
+            
+            if c == "strength":
+                shop.buy_strength_potion(1)
+                
+            if c == "health":
+                shop.buy_health_potion(1)
+                
+            if c == "vision":
+                shop.buy_vision_card(1)
+                
+            if c == "exit":
+                shop_active = False
+               
+    
+        
     
     while_counter += 1
-    next_random_for_enemy = random.random()
     
-    print(next_random_for_enemy)
         
