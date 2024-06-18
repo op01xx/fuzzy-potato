@@ -4,7 +4,7 @@ super_dmg = 50
 punch_coin_reward = 10
 kick_coin_reward = 20
 while_counter = 0
-sps_available = False
+sps_available = 0
 hps_available = False
 vcs_available = False
 sps_price = 30
@@ -32,9 +32,9 @@ lead to unexpected errors!
 dev_tools = '''
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 
-Version: 1.0.8 (earlier access)
+Version: 1.0.9 (earlier access)
 
-Patch Notes (18.06.24; 22:56):
+Patch Notes (18.06.24; 23:35):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -48,11 +48,13 @@ Patch Notes (18.06.24; 22:56):
     +  minor bug fixes
     +  added colors to terminal
     +  fixed major bugs
-    +  added Shop (unfinished)
+    +  added Shop 
+    +  added potions/cards (unfinished)
 
 Extra Notes:
 
     -  still some bugs (will be fixed soon)
+    -  potion/card usage needs to be fixed
 
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 '''
@@ -185,6 +187,13 @@ class Shop():
         if player.coins >= 30:
             player.coins -= sps_price
             sps_available = True
+            print(Fore.GREEN  + f'''
+------------------------------
+       Potion bought! ✅
+------------------------------               
+                  ''')
+            print( Style.RESET_ALL)
+            return sps_available
         else:  
             print(Fore.RED  + f'''
 ------------------------------
@@ -198,6 +207,12 @@ class Shop():
         if player.coins >= 50:
             player.coins -= hps_price
             hps_available = True
+            print(Fore.GREEN  + f'''
+------------------------------
+       Potion bought! ✅
+------------------------------               
+                  ''')
+            return hps_available
         else:  
             print(Fore.RED  + f'''
 ------------------------------
@@ -211,6 +226,12 @@ class Shop():
         if player.coins >= 100:
             player.coins -= vcs_price
             vcs_available = True
+            print(Fore.GREEN  + f'''
+------------------------------
+        Card bought! ✅
+------------------------------               
+                  ''')
+            return vcs_available
         else:  
             print(Fore.RED  + f'''
 ------------------------------
@@ -259,7 +280,7 @@ while enemy.hp > 0 and player.hp > 0:
         print(dev_tools)
 
 
-    if b >= 0.25 and next_random_for_enemy >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True and a != "shop":
+    if b >= 0.25 and next_random_for_enemy >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True and a != "shop" and a != "use health" and a != "use strength" and a != "use vision card":
         enemy.punch(player)
         print(f'''
 Player's health after punch: {player.hp}
@@ -269,7 +290,7 @@ Player's health after punch: {player.hp}
         exit
 
 
-    if b < 0.25 and next_random_for_enemy < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True and a != "shop":
+    if b < 0.25 and next_random_for_enemy < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True and a != "shop" and a != "use health" and a != "use strength" and a != "use vision card":
         player.super(enemy.dmg)
 
     if a == "punch":
@@ -346,7 +367,7 @@ Enemy's health after kick: {enemy.hp}
         print( Fore.GREEN + '''
           
 ******************************
-            you win
+           you win 🏆
 ******************************''')
         print(Style.RESET_ALL)
         
@@ -375,6 +396,12 @@ Enemy's health after kick: {enemy.hp}
         
     if a == "shop":
         shop_active = True
+        print( Fore.LIGHTMAGENTA_EX + '''
+          
+******************************
+          Shop entered
+******************************''')
+        print(Style.RESET_ALL)
         print(f'''
 ++++++++++++++++++++++++++++++++++
                SHOP        
@@ -393,6 +420,7 @@ Enemy's health after kick: {enemy.hp}
             
             if c == "strength":
                 shop.buy_strength_potion(1)
+                print(sps_available)
                 
             if c == "health":
                 shop.buy_health_potion(1)
@@ -402,7 +430,73 @@ Enemy's health after kick: {enemy.hp}
                 
             if c == "exit":
                 shop_active = False
+                print( Fore.LIGHTMAGENTA_EX + '''
+          
+******************************
+          Shop exited
+******************************''')
+        print(Style.RESET_ALL)
+     
+     
+        
+        
+    if a == "use strength" and sps_available == False:
+        print( Fore.LIGHTRED_EX + '''
+          
+******************************
+      No Strength Potion 
+******************************''')
+        print(Style.RESET_ALL)
+        
+    if a == "use strength" and sps_available == True:
+        print( Fore.LIGHTGREEN_EX + '''
+          
+******************************
+     Strength Potion used
+******************************''')
+        print(Style.RESET_ALL)
+        player.sps_use()
+    
+           
+           
+           
                
+    if a == "use health" and hps_available == True:
+        print( Fore.LIGHTGREEN_EX + '''
+          
+******************************
+      Health Potion used
+******************************''')
+        print(Style.RESET_ALL)
+        player.hps_use()
+        
+    if a == "use health" and hps_available == False:
+        print( Fore.LIGHTRED_EX + '''
+          
+******************************
+     No Health Potion 
+******************************''')
+        print(Style.RESET_ALL)
+        
+        
+        
+        
+    if a == "use vision card" and vcs_available == True:
+        print( Fore.LIGHTGREEN_EX + '''
+          
+******************************
+       Vision Card used
+******************************''')
+        print(Style.RESET_ALL)
+        player.vcs_use()
+        
+    if a == "use vision card" and vcs_available == False:
+        print( Fore.LIGHTGREEN_EX + '''
+          
+******************************
+        No Vision Card
+******************************''')
+        print(Style.RESET_ALL)
     
         
     
