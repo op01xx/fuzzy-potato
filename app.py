@@ -21,9 +21,9 @@ lead to unexpected errors!
 dev_tools = '''
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 
-Version: 1.0.2 (alpha)
+Version: 1.0.4 (earlier access)
 
-Patch Notes (18.06.24; 18:27):
+Patch Notes (18.06.24; 21:19):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -33,7 +33,7 @@ Patch Notes (18.06.24; 18:27):
     +  changed 'onehit' name to 'super'
     +  'kick' function added to player
     +  added draw! (fixed win + loose at the same time)
-    + Nerfed Kick to not be able to spam it.
+    +  Nerfed kick (no spamming possible)
 
 Extra Notes:
 
@@ -181,7 +181,7 @@ while enemy.hp > 0 and player.hp > 0:
         print(dev_tools)
 
 
-    if b >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "":
+    if b >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and a != "kick" and punch_counter < 3:
         enemy.punch(player)
         print(f'''
 Player's health after punch: {player.hp}
@@ -191,7 +191,7 @@ Player's health after punch: {player.hp}
         pass
 
 
-    if b < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "":
+    if b < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and a != "kick" and punch_counter < 3:
         player.super(enemy.dmg)
 
     if a == "punch":
@@ -246,7 +246,7 @@ Controls:
     if a == "kick" and punch_counter >= 3:
         player.kick(enemy)
         player.coins += kick_coin_reward
-        punch_counter -=1
+        punch_counter -= 1
         print(f'''
 Enemy's health after kick: {enemy.hp}
 ------------------------------''')
