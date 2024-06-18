@@ -1,3 +1,6 @@
+from colorama import Fore, Back, Style 
+
+
 super_dmg = 50
 punch_coin_reward = 10
 kick_coin_reward = 20
@@ -23,7 +26,7 @@ dev_tools = '''
 
 Version: 1.0.5 (earlier access)
 
-Patch Notes (18.06.24; 21:34):
+Patch Notes (18.06.24; 21:54):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -35,6 +38,7 @@ Patch Notes (18.06.24; 21:34):
     +  added draw! (fixed win + loose at the same time)
     +  Nerfed kick (no spamming possible)
     +  minor bug fixes
+    +Added some Color
 
 Extra Notes:
 
@@ -83,11 +87,12 @@ Player kick's! Enemy takes {self.dmg * 2} damage.''')
     def super(self, dmg):
         self.hp -= super_dmg
         
-        print(f'''
+        print( Fore.YELLOW  + f'''
 ------------------------------
 Enemy uses super! Player takes {super_dmg} damage.
 ------------------------------
             ''')
+        print( Style.RESET_ALL)
 
         
 
@@ -265,24 +270,26 @@ Enemy's health after kick: {enemy.hp}
         
         
     if enemy.hp <= 0 and player.hp > 0:
-        print('''
+        print(Fore.GREEN +'''
           
 ******************************
             you win
 ******************************''')
+        print(Style.RESET_ALL)
         
         
 
     if player.hp <= 0 and enemy.hp > 0:
-        print('''
+        print( Fore.RED + '''
           
 ******************************
            you loose
 ******************************''')
+        print( Style.RESET_ALL)
         
     
     if player.hp <= 0 and enemy.hp <= 0:
-        print(f'''
+        print(  f'''
 ******************************
   You both die! Nobody wins
 ******************************
