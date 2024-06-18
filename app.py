@@ -33,6 +33,7 @@ Patch Notes (18.06.24; 18:27):
     +  changed 'onehit' name to 'super'
     +  'kick' function added to player
     +  added draw! (fixed win + loose at the same time)
+    + Nerfed Kick to not be able to spam it.
 
 Extra Notes:
 
@@ -245,6 +246,7 @@ Controls:
     if a == "kick" and punch_counter >= 3:
         player.kick(enemy)
         player.coins += kick_coin_reward
+        punch_counter -=1
         print(f'''
 Enemy's health after kick: {enemy.hp}
 ------------------------------''')
