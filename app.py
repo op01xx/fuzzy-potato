@@ -21,9 +21,9 @@ lead to unexpected errors!
 dev_tools = '''
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 
-Version: 1.0.4 (earlier access)
+Version: 1.0.5 (earlier access)
 
-Patch Notes (18.06.24; 21:19):
+Patch Notes (18.06.24; 21:34):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -34,6 +34,7 @@ Patch Notes (18.06.24; 21:19):
     +  'kick' function added to player
     +  added draw! (fixed win + loose at the same time)
     +  Nerfed kick (no spamming possible)
+    +  minor bug fixes
 
 Extra Notes:
 
@@ -175,13 +176,13 @@ while enemy.hp > 0 and player.hp > 0:
     a = input()
     b = random.random()
     next_random_for_enemy = random.random()
-
+    
 
     if a == "info:ver/upd/patn:tools":
         print(dev_tools)
 
 
-    if b >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and a != "kick" and punch_counter < 3:
+    if b >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "":
         enemy.punch(player)
         print(f'''
 Player's health after punch: {player.hp}
@@ -191,7 +192,7 @@ Player's health after punch: {player.hp}
         pass
 
 
-    if b < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and a != "kick" and punch_counter < 3:
+    if b < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "":
         player.super(enemy.dmg)
 
     if a == "punch":
@@ -242,6 +243,15 @@ Controls:
               ''')
      
      
+    if a == "kick" and punch_counter < 3:
+        print(f'''
+------------------------------
+You can not kick yet!
+------------------------------
+''')
+       
+     
+     
         
     if a == "kick" and punch_counter >= 3:
         player.kick(enemy)
@@ -249,15 +259,7 @@ Controls:
         punch_counter -= 1
         print(f'''
 Enemy's health after kick: {enemy.hp}
-------------------------------''')
-        
-    if a == "kick" and punch_counter < 3:
-        print(f'''
-------------------------------
-    You can not kick yet!
-------------------------------
-''')
-        
+------------------------------''') 
         
         
         
