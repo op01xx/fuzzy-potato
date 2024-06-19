@@ -8,6 +8,9 @@ sps_price = 30
 hps_price = 50
 vcs_price = 100
 shop_active = False
+health_potion_buff = 30
+strength_potion_buff = 5
+restart_first_fight = False
 
 
 
@@ -18,7 +21,9 @@ WARNING!!!
 
 Please watch put for spaces at the 
 end of your inputs as this will 
-lead to unexpected errors! 
+lead to unexpected errors! Please 
+make sure to only use potions/card
+outside of the shop!
 
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
       ''')
@@ -29,9 +34,9 @@ lead to unexpected errors!
 dev_tools = '''
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 
-Version: 1.0.11 (earlier access)
+Version: 1.0.12 (earlier access)
 
-Patch Notes (19.06.24; 13:00):
+Patch Notes (19.06.24; 21:20):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -49,6 +54,8 @@ Patch Notes (19.06.24; 13:00):
     +  added potions/cards
     +  added more colors
     +  improved "stats"
+    +  improved Warning
+    +  'respawn' added
 
 Extra Notes:
 
@@ -112,12 +119,12 @@ Enemy uses super! Player takes {super_dmg} damage.
     
     
     def sps_use(self):
-        self.dmg += 5
-        shop.sps = 0
+        self.dmg += strength_potion_buff
+        start_shop.sps = 0
         
     def hps_use(self):
-        self.hp += 30
-        shop.hps = 0
+        self.hp += health_potion_buff
+        start_shop.hps = 0
         
     def vcs_use(self):
         if next_random_for_enemy < 0.25:
@@ -133,7 +140,15 @@ Enemy uses super! Player takes {super_dmg} damage.
 ------------------------------
                   ''')
         print( Style.RESET_ALL)
-        shop.vcs = 0
+        start_shop.vcs = 0
+        
+    
+    def respawn(self):
+        self.hp = 100
+        self.dmg = 10
+        self.coins = 20
+        start_shop.player_respawn()
+        start_enemy.player_respawn()
 
 
         
@@ -167,6 +182,11 @@ Enemy punch's! {player.__class__.__name__} takes {self.dmg} damage.''')
     def take_kick(self, dmg):
         self.hp -= dmg * 2
         
+    def player_respawn(self):
+        self.hp = 100
+        self.dmg = 10
+        self.coins = 20
+        
         
 
 
@@ -184,7 +204,7 @@ class Shop():
 
 
     def buy_strength_potion(self, sps):
-        if player.coins >= 30:
+        if player.coins >= sps_price:
             player.coins -= sps_price
             self.sps = 1
             print(Fore.GREEN  + f'''
@@ -204,7 +224,7 @@ class Shop():
     
     
     def buy_health_potion(self, hps):
-        if player.coins >= 50:
+        if player.coins >= hps_price:
             player.coins -= hps_price
             self.hps = 1
             print(Fore.GREEN  + f'''
@@ -225,7 +245,7 @@ class Shop():
     
 
     def buy_vision_card(self, vcs):     #vc reveals "var: next_random_for_enemy"    (still need to remove commas and display action name instead of random number)
-        if player.coins >= 100:
+        if player.coins >= vcs_price:
             player.coins -= vcs_price
             self.vcs = 1
             print(Fore.GREEN  + f'''
@@ -241,7 +261,14 @@ class Shop():
      Not enough Coins! 🪙
 ------------------------------               
                   ''')
-            print( Style.RESET_ALL)                            
+            print( Style.RESET_ALL)   
+            
+    
+    def player_respawn(self):
+        self.sps = 0
+        self.hps = 0
+        self.vcs = 0
+                                 
 
 
 
@@ -254,8 +281,8 @@ class Shop():
 
 
 player = Player(100, 10, 20)
-enemy = Enemy(100, 10, 20)
-shop = Shop(0, 0, 0)
+start_enemy = Enemy(100, 10, 20)
+start_shop = Shop(0, 0, 0)
 
 
 
@@ -264,13 +291,24 @@ shop = Shop(0, 0, 0)
 
 
 
-while enemy.hp > 0 and player.hp > 0:
+while start_enemy.hp > 0 and player.hp > 0 or restart_first_fight == True:
     a = input()
     if while_counter == 0:
         b = random.random()
         next_random_for_enemy = b
         
     b = next_random_for_enemy
+
+    if restart_first_fight == True:
+        player.respawn()
+        restart_first_fight = False
+        print(Fore.LIGHTGREEN_EX + f'''
+------------------------------
+   Successfully respawned
+------------------------------              
+''')
+        print(Style.RESET_ALL)
+        
 
     if a == "kick" and punch_counter < 3:
         kick_ok = False
@@ -284,7 +322,7 @@ while enemy.hp > 0 and player.hp > 0:
 
 
     if b >= 0.25 and next_random_for_enemy >= 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True and a != "shop" and a != "use health" and a != "use strength" and a != "use vision card":
-        enemy.punch(player)
+        start_enemy.punch(player)
         print(f'''
 Player's health after punch: {player.hp}
 ------------------------------''')
@@ -294,14 +332,14 @@ Player's health after punch: {player.hp}
 
 
     if b < 0.25 and next_random_for_enemy < 0.25 and a != "defend" and a != "stats" and a != "tutorial" and a != "info:ver/upd/patn:tools" and a != "" and kick_ok == True and a != "shop" and a != "use health" and a != "use strength" and a != "use vision card":
-        player.super(enemy.dmg)
+        player.super(start_enemy.dmg)
 
     if a == "punch":
-        player.punch(enemy)
+        player.punch(start_enemy)
         punch_counter += 1
         player.coins += punch_coin_reward
         print(f'''
-Enemy's health after punch: {enemy.hp}
+Enemy's health after punch: {start_enemy.hp}
 ------------------------------''')
         
 
@@ -315,8 +353,8 @@ Player's health after defending: {player.hp}
     if a == "stats":
         print(Fore.CYAN + f''' 
 ------------------------------
-Player HP: {player.hp}❤️   DMG: {player.dmg}⚔️    Coins: {player.coins}🪙    Health: {shop.sps}🫙    Strength: {shop.sps}🫙    Vision Cards: {shop.sps}🎴
-Enemy  HP: {enemy.hp}❤️    DMG: {enemy.dmg}⚔️     Coins: {enemy.coins}🪙    
+Player HP: {player.hp}❤️   DMG: {player.dmg}⚔️    Coins: {player.coins}🪙    Health: {start_shop.sps}🫙    Strength: {start_shop.sps}🫙    Vision Cards: {start_shop.sps}🎴
+Enemy  HP: {start_enemy.hp}❤️    DMG: {start_enemy.dmg}⚔️     Coins: {start_enemy.coins}🪙    
 
 Punch Counter: {punch_counter}      
 ------------------------------''')
@@ -342,6 +380,7 @@ Controls:
     + Enter "info:ver/upd/patn:tools" to view game version
     + Enter "kick" to kick you opponent (2x damage) 
     + Enter "shop" to open the shop
+    + Enter "respwan" to respawn after loose
 ------------------------------------------------------------              
               ''')
      
@@ -349,7 +388,7 @@ Controls:
     if a == "kick" and punch_counter < 3:
         print( Fore.RED + f'''
 ------------------------------
-You can not kick yet!
+    You can not kick yet!
 ------------------------------
 ''')
         print( Style.RESET_ALL)
@@ -358,17 +397,17 @@ You can not kick yet!
      
         
     if a == "kick" and punch_counter >= 3:
-        player.kick(enemy)
+        player.kick(start_enemy)
         player.coins += kick_coin_reward
         punch_counter -= 1
         print(f'''
-Enemy's health after kick: {enemy.hp}
+Enemy's health after kick: {start_enemy.hp}
 ------------------------------''') 
         
         
         
         
-    if enemy.hp <= 0 and player.hp > 0:
+    if start_enemy.hp <= 0 and player.hp > 0:
         print( Fore.GREEN + '''
           
 ******************************
@@ -378,22 +417,37 @@ Enemy's health after kick: {enemy.hp}
         
         
 
-    if player.hp <= 0 and enemy.hp > 0:
+    if player.hp <= 0 and start_enemy.hp > 0:
         print( Fore.RED + '''
           
 ******************************
-           you loose
+           you loose!
+ enter "respawn" to try again
 ******************************''')
         print(Style.RESET_ALL)
+        restart_first_fight_request = input()
+        if restart_first_fight_request == "respawn":
+            punch_counter = 0
+            restart_first_fight = True
+            print(Fore.LIGHTGREEN_EX + f'''
+------------------------------
+   Successfully respawned
+------------------------------              
+''')
+        print(Style.RESET_ALL)
+            
         
     
-    if player.hp <= 0 and enemy.hp <= 0:
-        print(f'''
+    if player.hp <= 0 and start_enemy.hp <= 0:
+        print( Fore.LIGHTYELLOW_EX + f'''
 ******************************
   You both die! Nobody wins
+ enter "respawn" to try again
 ******************************
 
 ''')
+        print(Style.RESET_ALL)
+        restart_first_fight = True
         
       
     next_random_for_enemy = random.random()
@@ -424,14 +478,13 @@ Enemy's health after kick: {enemy.hp}
             c = input()
             
             if c == "strength":
-                shop.buy_strength_potion(1)
-                print(shop.sps)
+                start_shop.buy_strength_potion(1)
                 
             if c == "health":
-                shop.buy_health_potion(1)
+                start_shop.buy_health_potion(1)
                 
             if c == "vision":
-                shop.buy_vision_card(1)
+                start_shop.buy_vision_card(1)
                 
             if c == "exit":
                 shop_active = False
@@ -445,7 +498,7 @@ Enemy's health after kick: {enemy.hp}
      
         
         
-    if a == "use strength" and shop.sps == 0:
+    if a == "use strength" and start_shop.sps == 0:
         print( Fore.LIGHTRED_EX + '''
           
 ******************************
@@ -453,7 +506,7 @@ Enemy's health after kick: {enemy.hp}
 ******************************''')
         print(Style.RESET_ALL)
         
-    if a == "use strength" and shop.sps == 1:
+    if a == "use strength" and start_shop.sps == 1:
         print( Fore.LIGHTGREEN_EX + '''
           
 ******************************
@@ -464,7 +517,9 @@ Enemy's health after kick: {enemy.hp}
     
            
            
-    if a == "use health" and shop.hps == False:
+           
+           
+    if a == "use health" and start_shop.hps == False:
         print( Fore.LIGHTRED_EX + '''
           
 ******************************
@@ -472,7 +527,7 @@ Enemy's health after kick: {enemy.hp}
 ******************************''')
         print(Style.RESET_ALL)
                
-    if a == "use health" and shop.hps == True:
+    if a == "use health" and start_shop.hps == True:
         print( Fore.LIGHTGREEN_EX + '''
           
 ******************************
@@ -483,7 +538,8 @@ Enemy's health after kick: {enemy.hp}
         
         
         
-    if a == "use vision card" and shop.vcs == False:
+        
+    if a == "use vision card" and start_shop.vcs == False:
         print( Fore.LIGHTRED_EX + '''
           
 ******************************
@@ -491,7 +547,7 @@ Enemy's health after kick: {enemy.hp}
 ******************************''')
         print(Style.RESET_ALL)
         
-    if a == "use vision card" and shop.vcs == True:
+    if a == "use vision card" and start_shop.vcs == True:
         print( Fore.LIGHTGREEN_EX + '''
           
 ******************************
