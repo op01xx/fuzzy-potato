@@ -36,7 +36,7 @@ dev_tools = '''
 
 Version: 1.0.13 (earlier access)
 
-Patch Notes (19.06.24; 21:47):
+Patch Notes (19.06.24; 21:50):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -57,6 +57,7 @@ Patch Notes (19.06.24; 21:47):
     +  improved Warning
     +  'respawn' added
     +  fixed bug in 'stats'
+    +  fixed coins bug
 
 Extra Notes:
 
@@ -281,7 +282,7 @@ class Shop():
 
 
 
-player = Player(100, 10, 520)
+player = Player(100, 10, 20)
 start_enemy = Enemy(100, 10, 20)
 start_shop = Shop(0, 0, 0)
 
