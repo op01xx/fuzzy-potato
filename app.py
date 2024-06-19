@@ -29,9 +29,9 @@ lead to unexpected errors!
 dev_tools = '''
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 
-Version: 1.0.10 (earlier access)
+Version: 1.0.11 (earlier access)
 
-Patch Notes (19.06.24; 12:51):
+Patch Notes (19.06.24; 13:00):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -47,6 +47,8 @@ Patch Notes (19.06.24; 12:51):
     +  fixed major bugs
     +  added Shop 
     +  added potions/cards
+    +  added more colors
+    +  improved "stats"
 
 Extra Notes:
 
@@ -311,13 +313,14 @@ Player's health after defending: {player.hp}
         
         
     if a == "stats":
-        print(f''' 
+        print(Fore.CYAN + f''' 
 ------------------------------
-Player HP: {player.hp} DMG: {player.dmg}  Coins: {player.coins}
-Enemy HP: {enemy.hp}   DMG: {enemy.dmg}   Coins: {enemy.coins}
+Player HP: {player.hp}❤️   DMG: {player.dmg}⚔️    Coins: {player.coins}🪙    Health: {shop.sps}🫙    Strength: {shop.sps}🫙    Vision Cards: {shop.sps}🎴
+Enemy  HP: {enemy.hp}❤️    DMG: {enemy.dmg}⚔️     Coins: {enemy.coins}🪙    
 
 Punch Counter: {punch_counter}      
 ------------------------------''')
+        print( Style.RESET_ALL)
         
         
     if a == "tutorial":
@@ -344,11 +347,12 @@ Controls:
      
      
     if a == "kick" and punch_counter < 3:
-        print(f'''
+        print( Fore.RED + f'''
 ------------------------------
 You can not kick yet!
 ------------------------------
 ''')
+        print( Style.RESET_ALL)
        
      
      
