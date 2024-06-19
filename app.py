@@ -4,9 +4,6 @@ super_dmg = 50
 punch_coin_reward = 10
 kick_coin_reward = 20
 while_counter = 0
-sps_available = 0
-hps_available = False
-vcs_available = False
 sps_price = 30
 hps_price = 50
 vcs_price = 100
@@ -32,9 +29,9 @@ lead to unexpected errors!
 dev_tools = '''
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 
-Version: 1.0.9 (earlier access)
+Version: 1.0.10 (earlier access)
 
-Patch Notes (18.06.24; 23:35):
+Patch Notes (19.06.24; 12:51):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -49,12 +46,12 @@ Patch Notes (18.06.24; 23:35):
     +  added colors to terminal
     +  fixed major bugs
     +  added Shop 
-    +  added potions/cards (unfinished)
+    +  added potions/cards
 
 Extra Notes:
 
     -  still some bugs (will be fixed soon)
-    -  potion/card usage needs to be fixed
+
 
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 '''
@@ -114,11 +111,11 @@ Enemy uses super! Player takes {super_dmg} damage.
     
     def sps_use(self):
         self.dmg += 5
-        sps_available = False
+        shop.sps = 0
         
     def hps_use(self):
         self.hp += 30
-        sps_available = False
+        shop.hps = 0
         
     def vcs_use(self):
         if next_random_for_enemy < 0.25:
@@ -134,6 +131,7 @@ Enemy uses super! Player takes {super_dmg} damage.
 ------------------------------
                   ''')
         print( Style.RESET_ALL)
+        shop.vcs = 0
 
 
         
@@ -186,14 +184,14 @@ class Shop():
     def buy_strength_potion(self, sps):
         if player.coins >= 30:
             player.coins -= sps_price
-            sps_available = True
+            self.sps = 1
             print(Fore.GREEN  + f'''
 ------------------------------
        Potion bought! ✅
 ------------------------------               
                   ''')
             print( Style.RESET_ALL)
-            return sps_available
+            return self.sps
         else:  
             print(Fore.RED  + f'''
 ------------------------------
@@ -206,13 +204,15 @@ class Shop():
     def buy_health_potion(self, hps):
         if player.coins >= 50:
             player.coins -= hps_price
-            hps_available = True
+            self.hps = 1
             print(Fore.GREEN  + f'''
 ------------------------------
        Potion bought! ✅
 ------------------------------               
                   ''')
-            return hps_available
+            print( Style.RESET_ALL)
+            return self.hps
+        
         else:  
             print(Fore.RED  + f'''
 ------------------------------
@@ -225,13 +225,14 @@ class Shop():
     def buy_vision_card(self, vcs):     #vc reveals "var: next_random_for_enemy"    (still need to remove commas and display action name instead of random number)
         if player.coins >= 100:
             player.coins -= vcs_price
-            vcs_available = True
+            self.vcs = 1
             print(Fore.GREEN  + f'''
 ------------------------------
         Card bought! ✅
 ------------------------------               
                   ''')
-            return vcs_available
+            print( Style.RESET_ALL)  
+            return self.vcs
         else:  
             print(Fore.RED  + f'''
 ------------------------------
@@ -252,7 +253,7 @@ class Shop():
 
 player = Player(100, 10, 20)
 enemy = Enemy(100, 10, 20)
-shop = Shop(1, 1, 1)
+shop = Shop(0, 0, 0)
 
 
 
@@ -420,7 +421,7 @@ Enemy's health after kick: {enemy.hp}
             
             if c == "strength":
                 shop.buy_strength_potion(1)
-                print(sps_available)
+                print(shop.sps)
                 
             if c == "health":
                 shop.buy_health_potion(1)
@@ -440,7 +441,7 @@ Enemy's health after kick: {enemy.hp}
      
         
         
-    if a == "use strength" and sps_available == False:
+    if a == "use strength" and shop.sps == 0:
         print( Fore.LIGHTRED_EX + '''
           
 ******************************
@@ -448,7 +449,7 @@ Enemy's health after kick: {enemy.hp}
 ******************************''')
         print(Style.RESET_ALL)
         
-    if a == "use strength" and sps_available == True:
+    if a == "use strength" and shop.sps == 1:
         print( Fore.LIGHTGREEN_EX + '''
           
 ******************************
@@ -459,9 +460,15 @@ Enemy's health after kick: {enemy.hp}
     
            
            
-           
+    if a == "use health" and shop.hps == False:
+        print( Fore.LIGHTRED_EX + '''
+          
+******************************
+     No Health Potion 
+******************************''')
+        print(Style.RESET_ALL)
                
-    if a == "use health" and hps_available == True:
+    if a == "use health" and shop.hps == True:
         print( Fore.LIGHTGREEN_EX + '''
           
 ******************************
@@ -470,18 +477,17 @@ Enemy's health after kick: {enemy.hp}
         print(Style.RESET_ALL)
         player.hps_use()
         
-    if a == "use health" and hps_available == False:
+        
+        
+    if a == "use vision card" and shop.vcs == False:
         print( Fore.LIGHTRED_EX + '''
           
 ******************************
-     No Health Potion 
+        No Vision Card
 ******************************''')
         print(Style.RESET_ALL)
         
-        
-        
-        
-    if a == "use vision card" and vcs_available == True:
+    if a == "use vision card" and shop.vcs == True:
         print( Fore.LIGHTGREEN_EX + '''
           
 ******************************
@@ -490,15 +496,7 @@ Enemy's health after kick: {enemy.hp}
         print(Style.RESET_ALL)
         player.vcs_use()
         
-    if a == "use vision card" and vcs_available == False:
-        print( Fore.LIGHTGREEN_EX + '''
-          
-******************************
-        No Vision Card
-******************************''')
-        print(Style.RESET_ALL)
-    
-        
+
     
     while_counter += 1
     
