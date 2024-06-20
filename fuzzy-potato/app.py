@@ -1,6 +1,9 @@
 from colorama import Fore, Back, Style 
 import random
 
+from storyline import first_Chapter, second_Chapter, third_Chapter
+
+
 super_dmg = 50
 punch_coin_reward = 10
 kick_coin_reward = 20
@@ -20,10 +23,7 @@ print(f'''
 
 WARNING!!!
 
-Please watch put for spaces at the 
-end of your inputs as this will 
-lead to unexpected errors! Please 
-make sure to only use potions/card
+Please make sure to only use potions/card
 outside of the shop!
 
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
@@ -35,12 +35,12 @@ outside of the shop!
 dev_tools = '''
 /*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-//*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/*-/
 
-Version: 1.0.13 (earlier access)
+Version: 1.0.14 (earlier access)
 
-Patch Notes (20.06.24; 13:19):
+Patch Notes (20.06.24; 14:13):
 
     + 'defend' function added to player
-    +  mayor bug fixes
+    +  mayor bug fixes 
     +  balancing 
     +  nerfed onehit to 25% Instead of 30%
     +  nerfed onehit to -50HP instead of -100%
@@ -60,6 +60,7 @@ Patch Notes (20.06.24; 13:19):
     +  fixed bug in 'stats'
     +  fixed coins bug
     +  respawn after draw fixed
+    +  fixed bug with spaces after input
 
 Extra Notes:
 
@@ -295,6 +296,7 @@ start_shop = Shop(0, 0, 0)
 
 while start_enemy.hp > 0 and player.hp > 0 or restart_first_fight == True:
     a = input()
+    a = a.strip()
     if while_counter == 0:
         b = random.random()
         next_random_for_enemy = b
@@ -486,6 +488,7 @@ Enemy's health after kick: {start_enemy.hp}
         
         while shop_active == True:
             c = input()
+            c = c.strip()
             
             if c == "strength":
                 start_shop.buy_strength_potion(1)
