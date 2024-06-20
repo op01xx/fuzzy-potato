@@ -36,7 +36,7 @@ dev_tools = '''
 
 Version: 1.0.13 (earlier access)
 
-Patch Notes (19.06.24; 21:50):
+Patch Notes (20.06.24; 13:19):
 
     + 'defend' function added to player
     +  mayor bug fixes
@@ -58,6 +58,7 @@ Patch Notes (19.06.24; 21:50):
     +  'respawn' added
     +  fixed bug in 'stats'
     +  fixed coins bug
+    +  respawn after draw fixed
 
 Extra Notes:
 
@@ -355,7 +356,7 @@ Player's health after defending: {player.hp}
     if a == "stats":
         print(Fore.CYAN + f''' 
 ------------------------------
-Player HP: {player.hp}❤️   DMG: {player.dmg}⚔️    Coins: {player.coins}🪙    Health: {start_shop.hps}🫙    Strength: {start_shop.sps}🫙    Vision Cards: {start_shop.vps}🎴
+Player HP: {player.hp}❤️   DMG: {player.dmg}⚔️    Coins: {player.coins}🪙    Health: {start_shop.hps}🫙    Strength: {start_shop.sps}🫙    Vision Cards: {start_shop.vcs}🎴
 Enemy  HP: {start_enemy.hp}❤️    DMG: {start_enemy.dmg}⚔️     Coins: {start_enemy.coins}🪙    
 
 Punch Counter: {punch_counter}      
@@ -449,7 +450,15 @@ Enemy's health after kick: {start_enemy.hp}
 
 ''')
         print(Style.RESET_ALL)
-        restart_first_fight = True
+        if restart_first_fight_request == "respawn":
+            punch_counter = 0
+            restart_first_fight = True
+            print(Fore.LIGHTGREEN_EX + f'''
+------------------------------
+   Successfully respawned
+------------------------------              
+''')
+        print(Style.RESET_ALL)
         
       
     next_random_for_enemy = random.random()
