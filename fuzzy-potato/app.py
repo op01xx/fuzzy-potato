@@ -37,7 +37,7 @@ dev_tools = '''
 
 Version: 1.0.14 (earlier access)
 
-Patch Notes (20.06.24; 14:13):
+Patch Notes (23.06.24; 19:36):
 
     + 'defend' function added to player
     +  mayor bug fixes 
@@ -61,6 +61,12 @@ Patch Notes (20.06.24; 14:13):
     +  fixed coins bug
     +  respawn after draw fixed
     +  fixed bug with spaces after input
+    +  started html
+    +  added 'templates' folder
+    +  added 'start_app.py'
+    +  added 'storyline.py'
+    +  added 'game.html'
+    
 
 Extra Notes:
 
